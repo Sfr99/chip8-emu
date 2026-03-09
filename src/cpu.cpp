@@ -16,12 +16,32 @@ void CPU::cycle() {
     // decode
     uint8_t decode = (opcode & 0xF000) >> 12;
 
+    // execute
     switch (decode) {
+    case 0x1: {
+        // jump: 0X1NNN -> jump to address NNN
+        uint16_t nnn = (opcode & 0x0FFF);
+        PC = nnn;
+        break;
+    }
     case 0x6: {
         // load in register: 0x6XNN -> writes value NN in register X
         uint8_t x = (opcode & 0x0F00) >> 8;
         uint8_t nn = (opcode & 0x00FF);
         gp_reg[x] = nn;
+        break;
+    }
+    case 0x7: {
+        // add value to register: 0x7XNN -> adds value NN to register X
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        uint8_t nn = (opcode & 0x00FF);
+        gp_reg[x] += nn;
+        break;
+    }
+    case 0xA: {
+        // set index register: 0xANNN -> set index register to NNN
+        uint16_t nnn = (opcode & 0x0FFF);
+        i_reg = nnn;
         break;
     }
     default:
