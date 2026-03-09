@@ -3,7 +3,7 @@
 #include "chip8/cpu.hpp"
 
 CPU::CPU(Memory &_memory, Display &_display)
-    : memory(_memory), display(_display) {
+    : memory(_memory), display(_display), rng(std::random_device{}()) {
     PC = Memory::ROM_START_ADDRESS;
     SP = 0;
     i_reg = 0;
@@ -175,6 +175,21 @@ void CPU::cycle() {
         i_reg = nnn;
         break;
     }
+    case 0xB: {
+        // jump with offset: 0xBNNN -> jumps to NNN + v0
+        uint16_t nnn = (opcode & 0x0FFF);
+        PC = nnn + gp_reg[0];
+        break;
+    }
+    case 0xC: {
+        // random: 0xCXNN -> generates a random numer, binary ANDs it
+        // with NN and puts the result in vx.
+        uint8_t nn = (opcode & 0x00FF);
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        std::uniform_int_distribution<uint8_t> dist(0, 255);
+        gp_reg[x] = dist(rng) & nn;
+        break;
+    }
     case 0xD: {
         // draw display screen: draw from vx to vy draw an N pixels tall
         // sprite from the memory location that the I index register is
@@ -185,6 +200,55 @@ void CPU::cycle() {
                          memory.adrPointer(i_reg)))
             gp_reg[15] = 1;
 
+        break;
+    }
+    case 0xF: {
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        switch (opcode & 0x00FF) {
+        case 0x07:
+            /* code */
+            break;
+        case 0x15:
+            /* code */
+            break;
+        case 0x18:
+            /* code */
+            break;
+        case 0x1E:
+            // add to index: 0xFX1E -> I + vx
+            i_reg += gp_reg[x];
+            break;
+        case 0x0A:
+            // get key: 0xFX0A -> blocks if input
+            PC -= 2;
+            break;
+        case 0x29:
+            // font character: 0xFX29 -> I = address of the hex character in vx
+            i_reg = gp_reg[x] * 5;
+            break;
+        case 0x33:
+            // binary-coded decimal conversion: 0xFX33 ->
+            // takes the number in vx and converts it to
+            // three decimal digits and stores int I
+            memory.write(i_reg, gp_reg[x] / 100);
+            memory.write(i_reg + 1, (gp_reg[x] / 10) % 10);
+            memory.write(i_reg + 2, gp_reg[x] % 10);
+            break;
+        case 0x55:
+            // store memory: 0x0FX55
+            for (uint8_t i = 0; i <= x; i++) {
+                memory.write(i_reg + i, gp_reg[i]);
+            }
+            break;
+        case 0x65:
+            // load memory
+            for (uint8_t i = 0; i <= x; i++) {
+                gp_reg[i] = memory.read(i_reg + i);
+            }
+            break;
+        default:
+            break;
+        }
         break;
     }
     default:

@@ -3,6 +3,7 @@
 #define CPU_HPP
 #include "display.hpp"
 #include "memory.hpp"
+#include <random>
 
 class CPU {
   private:
@@ -19,6 +20,8 @@ class CPU {
 
     Memory &memory;
     Display &display;
+
+    std::mt19937 rng;
 
   public:
     CPU(Memory &_memory, Display &_display);
