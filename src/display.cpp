@@ -24,3 +24,7 @@ bool Display::draw(uint8_t x, uint8_t y, uint8_t size, const uint8_t *sprite) {
     }
     return colision;
 }
+
+bool Display::getPixel(uint8_t x, uint8_t y) const {
+    return screen[y * SCREEN_WIDTH + x];
+}

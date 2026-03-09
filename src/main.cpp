@@ -2,6 +2,7 @@
 #include "chip8/cpu.hpp"
 #include "chip8/display.hpp"
 #include "chip8/memory.hpp"
+#include "chip8/renderer.hpp"
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -27,13 +28,22 @@ int main(int argc, char *argv[]) {
     file.read(reinterpret_cast<char *>(buffer.data()), size);
 
     Memory memory;
+
     Display display;
     CPU cpu(memory, display);
+    Renderer renderer(display);
 
     memory.loadROM(buffer.data(), buffer.size());
 
     while (true) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                return 0;
+            }
+        }
         cpu.cycle();
+        renderer.render();
     }
 
     return 0;
