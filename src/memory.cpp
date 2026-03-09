@@ -25,3 +25,10 @@ void Memory::loadROM(const uint8_t *data, size_t size) {
     } else
         throw std::out_of_range("ROM too large to fit in memory");
 }
+
+const uint8_t *Memory::adrPointer(uint16_t address) const {
+    if (address < MEMORY_SIZE)
+        return memory.data() + address;
+    else
+        throw std::out_of_range("address out of RAM range");
+}

@@ -1,6 +1,7 @@
 /* chip8-emu -- MIT License -- Javier Salafranca Pradilla -- 2026*/
 #ifndef CPU_HPP
 #define CPU_HPP
+#include "display.hpp"
 #include "memory.hpp"
 
 class CPU {
@@ -17,9 +18,10 @@ class CPU {
     uint8_t SP;
 
     Memory &memory;
+    Display &display;
 
   public:
-    CPU(Memory &_memory);
+    CPU(Memory &_memory, Display &_display);
 
     void cycle();
 };

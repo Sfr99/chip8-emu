@@ -15,6 +15,7 @@ class Memory {
     uint8_t read(uint16_t address) const;
     void write(uint16_t address, uint8_t value);
     void loadROM(const uint8_t *data, size_t size);
+    const uint8_t *adrPointer(uint16_t address) const;
 
   private:
     std::array<uint8_t, MEMORY_SIZE> memory;
