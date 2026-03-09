@@ -1,3 +1,5 @@
+/* chip8-emu -- MIT License -- Javier Salafranca Pradilla -- 2026*/
+
 #include "chip8/cpu.hpp"
 
 CPU::CPU(Memory &_memory) : memory(_memory) {

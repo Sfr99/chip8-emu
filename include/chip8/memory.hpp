@@ -1,4 +1,5 @@
 /* chip8-emu -- MIT License -- Javier Salafranca Pradilla -- 2026*/
+
 #ifndef MEMORY_HPP
 #define MEMORY_HPP
 #include <array>
