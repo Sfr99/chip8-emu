@@ -12,6 +12,7 @@ project(chip8-emu
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(chip8-emu src/main.cpp src/memory.cpp)
+file(GLOB SOURCES src/*.cpp)
+add_executable(chip8-emu ${SOURCES})
 
 target_include_directories(chip8-emu PRIVATE include)
