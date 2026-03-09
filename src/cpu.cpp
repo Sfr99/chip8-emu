@@ -29,7 +29,9 @@ void CPU::cycle() {
             display.clear();
             break;
         case 0xE:
-            // 0x00EE
+            // ret: 0x00EE -> return from sbr
+            SP--;
+            PC = stack[SP];
             break;
         default:
             break;
@@ -40,6 +42,44 @@ void CPU::cycle() {
         // jump: 0x1NNN -> jump to address NNN
         uint16_t nnn = (opcode & 0x0FFF);
         PC = nnn;
+        break;
+    }
+    case 0x2: {
+        // call: 0x2NNN -> calls subroutine at NNN
+        uint16_t nnn = (opcode & 0x0FFF);
+        stack[SP] = PC;
+        SP++;
+        PC = nnn;
+        break;
+    }
+    case 0x3: {
+        // skip 0x3XNN skip 1 instruction if the value in
+        // vx = NN
+        uint8_t nn = (opcode & 0x00FF);
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        if (gp_reg[x] == nn) {
+            PC += 2;
+        }
+        break;
+    }
+    case 0x4: {
+        // skip 0x4XNN skip 1 instruction if the value in
+        // vx != NN
+        uint8_t nn = (opcode & 0x00FF);
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        if (gp_reg[x] != nn) {
+            PC += 2;
+        }
+        break;
+    }
+    case 0x5: {
+        // skip 0x5XY0 skip 1 instruction if the value in
+        // vx = vy
+        uint8_t y = (opcode & 0x00F0) >> 4;
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        if (gp_reg[x] == gp_reg[y]) {
+            PC += 2;
+        }
         break;
     }
     case 0x6: {
@@ -116,6 +156,16 @@ void CPU::cycle() {
         }
         default:
             break;
+        }
+        break;
+    }
+    case 0x9: {
+        // skip 0x9XY0 skip 1 instruction if the value in
+        // vx != vy
+        uint8_t y = (opcode & 0x00F0) >> 4;
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        if (gp_reg[x] != gp_reg[y]) {
+            PC += 2;
         }
         break;
     }
