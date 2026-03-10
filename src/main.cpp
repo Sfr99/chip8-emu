@@ -36,13 +36,20 @@ int main(int argc, char *argv[]) {
     memory.loadROM(buffer.data(), buffer.size());
 
     while (true) {
+        SDL_Delay(1000 / 60);
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 return 0;
             }
         }
-        cpu.cycle();
+
+        for (int i = 0; i < 10; i++) {
+            // ~500 inst/second
+            cpu.cycle();
+        }
+
+        cpu.updateTimers();
         renderer.render();
     }
 

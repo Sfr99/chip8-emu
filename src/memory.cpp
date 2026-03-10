@@ -3,7 +3,10 @@
 #include <algorithm>
 #include <stdexcept>
 
-Memory::Memory() { memory.fill(0); }
+Memory::Memory() {
+    memory.fill(0);
+    std::copy(fontSet.begin(), fontSet.end(), memory.begin());
+}
 
 uint8_t Memory::read(uint16_t address) const {
     if (address < MEMORY_SIZE)

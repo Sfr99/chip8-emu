@@ -9,6 +9,8 @@ CPU::CPU(Memory &_memory, Display &_display)
     i_reg = 0;
     stack.fill(0);
     gp_reg.fill(0);
+    delay_timer = 0;
+    sound_timer = 0;
 }
 
 void CPU::cycle() {
@@ -206,13 +208,18 @@ void CPU::cycle() {
         uint8_t x = (opcode & 0x0F00) >> 8;
         switch (opcode & 0x00FF) {
         case 0x07:
-            /* code */
+            // set timer to reg: 0xFX07 -> sets vx to the current value of the
+            // delay timer
+            gp_reg[x] = delay_timer;
             break;
         case 0x15:
-            /* code */
+            // set timer: 0xFX15 -> sets timer to the current value of vx
+            delay_timer = gp_reg[x];
             break;
         case 0x18:
-            /* code */
+            // set sound timer: 0xFX18 -> sets sound timer to the current value
+            // of vx
+            sound_timer = gp_reg[x];
             break;
         case 0x1E:
             // add to index: 0xFX1E -> I + vx
@@ -254,4 +261,11 @@ void CPU::cycle() {
     default:
         break;
     }
+}
+
+void CPU::updateTimers() {
+    if (delay_timer > 0)
+        delay_timer--;
+    if (sound_timer > 0)
+        sound_timer--;
 }

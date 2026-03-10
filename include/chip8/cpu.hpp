@@ -23,9 +23,13 @@ class CPU {
 
     std::mt19937 rng;
 
+    uint8_t delay_timer;
+    uint8_t sound_timer;
+
   public:
     CPU(Memory &_memory, Display &_display);
 
+    void updateTimers();
     void cycle();
 };
 
