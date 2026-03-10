@@ -2,6 +2,7 @@
 #ifndef CPU_HPP
 #define CPU_HPP
 #include "display.hpp"
+#include "input.hpp"
 #include "memory.hpp"
 #include <random>
 
@@ -20,6 +21,7 @@ class CPU {
 
     Memory &memory;
     Display &display;
+    Input &input;
 
     std::mt19937 rng;
 
@@ -27,7 +29,7 @@ class CPU {
     uint8_t sound_timer;
 
   public:
-    CPU(Memory &_memory, Display &_display);
+    CPU(Memory &_memory, Display &_display, Input &_input);
 
     void updateTimers();
     void cycle();

@@ -2,8 +2,9 @@
 
 #include "chip8/cpu.hpp"
 
-CPU::CPU(Memory &_memory, Display &_display)
-    : memory(_memory), display(_display), rng(std::random_device{}()) {
+CPU::CPU(Memory &_memory, Display &_display, Input &_input)
+    : memory(_memory), display(_display), rng(std::random_device{}()),
+      input(_input) {
     PC = Memory::ROM_START_ADDRESS;
     SP = 0;
     i_reg = 0;
@@ -204,6 +205,28 @@ void CPU::cycle() {
 
         break;
     }
+    case 0xE: {
+        uint8_t x = (opcode & 0x0F00) >> 8;
+        switch (opcode & 0x00FF) {
+        case 0x9E:
+            // skip if key: 0xEX9E -> skip one inst if the key in vx is pressed
+            if (input.getKey(gp_reg[x]))
+                PC += 2;
+            break;
+
+        case 0xA1:
+            // skip if key: 0xEXA1 -> skip one inst if the key in vx is not
+            // pressed
+            if (!input.getKey(gp_reg[x]))
+                PC += 2;
+            break;
+
+        default:
+            break;
+        }
+        break;
+    }
+
     case 0xF: {
         uint8_t x = (opcode & 0x0F00) >> 8;
         switch (opcode & 0x00FF) {
@@ -226,7 +249,13 @@ void CPU::cycle() {
             i_reg += gp_reg[x];
             break;
         case 0x0A:
-            // get key: 0xFX0A -> blocks if input
+            // get key: 0xFX0A -> blocks and waits forever until key input
+            for (uint8_t i = 0; i < 16; i++) {
+                if (input.getKey(i)) {
+                    gp_reg[x] = i;
+                    return;
+                }
+            }
             PC -= 2;
             break;
         case 0x29:
