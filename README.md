@@ -1,6 +1,6 @@
 # chip8-emu
 
-A CHIP-8 emulator written in C++17 with SDL2. The emulator is split into independent modules: Memory, CPU, Display, Input, and Renderer.
+A CHIP-8 emulator written in C++17 with SDL2. 
 
 ## Build & Run
 
@@ -17,6 +17,12 @@ cd ..
 cmake --build build
 ./build/chip8-emu <rom>
 ```
+
+## Architecture
+
+The emulator is split into independent modules (Memory, CPU, Display, Input, Renderer), each owning its own state. The CPU only communicates with the rest through well-defined interfaces, keeping the decode-execute loop clean.
+
+This implementation follows the SCHIP/CHIP-48 behavior for the ambiguous instructions: `8XY6`/`8XYE` shift VX in place (ignoring VY), and `FX55`/`FX65` do not increment the I register. See [Tobias V. Langhoff's guide](https://tobiasvl.github.io/blog/write-a-chip-8-emulator/) for details on these quirks.
 
 ## Controls
 ```
